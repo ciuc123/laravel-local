@@ -1,0 +1,60 @@
+services:
+
+  # PHP Service
+  php:
+    build:
+      context: .               # <-- missing before; required
+      target: php
+      args:
+        - APP_ENV=${APP_ENV}
+    environment:
+      - APP_ENV=${APP_ENV}
+      - CONTAINER_ROLE=app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    restart: unless-stopped
+
+  # Database Server
+  database:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      # Use defaults if host .env is missing values so MySQL can start
+      - MYSQL_DATABASE=${DB_DATABASE:-laravel}
+      - MYSQL_USER=${DB_USERNAME:-laravel}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-secret}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-secret}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Queue Server
+  queue:
+    build:
+      context: .               # keep context here too
+      target: php
+      args:
+        - APP_ENV=${APP_ENV}
+    environment:
+      - APP_ENV=${APP_ENV}
+      - CONTAINER_ROLE=queue
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - database
+    restart: unless-stopped
+
+volumes:
+  db-data: ~
