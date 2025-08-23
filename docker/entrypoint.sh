@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-set -e
 
 echo "env file exists."
 if [ ! -f .env ]; then
