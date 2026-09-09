@@ -1,4 +1,4 @@
-FROM php:8.0-cli-alpine AS php
+FROM php:8.2-cli-alpine AS php
 
 WORKDIR /var/www
 
@@ -26,7 +26,7 @@ RUN echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)"
     && echo "xdebug.log_level=7" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Composer
-COPY --from=composer:2.3.5 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy app
 COPY . .
