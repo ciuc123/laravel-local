@@ -18,7 +18,7 @@ services:
     - "8003:8000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    command: php -S 0.0.0.0:8000 -t public public/index.php
+    # No explicit command: let the entrypoint start the appropriate process (web or queue)
     depends_on:
       - database
     restart: unless-stopped

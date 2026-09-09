@@ -1,13 +1,16 @@
 #!/usr/bin/env sh
 
-echo "env file exists."
-if [ ! -f .env ]; then
+if [ -f .env ]; then
+  echo ".env exists."
+else
   if [ -f .env.example ]; then
     cp .env.example .env
     echo "Created .env from .env.example"
   elif [ -f .env.bk ]; then
     cp .env.bk .env
     echo "Created .env from .env.bk"
+  else
+    echo "No .env found."
   fi
 fi
 
@@ -25,13 +28,20 @@ fi
 # Wait for DB if configured (best-effort)
 if [ -n "$DB_HOST" ]; then
   echo "Waiting for database at $DB_HOST:$DB_PORT..."
-  for i in 1 2 3 4 5 6 7 8 9 10; do
+  for _ in 1 2 3 4 5 6 7 8 9 10; do
     php -r 'exit((bool)@fsockopen(getenv("DB_HOST")?: "127.0.0.1", getenv("DB_PORT")?: 3306) ? 0 : 1);' && break
     sleep 2
   done
 fi
 
 ROLE="${CONTAINER_ROLE:-app}"
+
+# If a command was provided to the container (via docker-compose `command:` or `docker run ...`),
+# run it instead of the built-in role handling. This allows `command:` in compose to work as expected.
+if [ "$#" -ne 0 ]; then
+  echo "Running provided command: $*"
+  exec "$@"
+fi
 
 case "$ROLE" in
   queue)
