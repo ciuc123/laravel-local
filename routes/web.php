@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/leetcode/show/{problem}/', [LeetcodeController::class, 'show'])->name('leetcode.show');
+
+Route::view('/', 'welcome', [
+    'greeting' => "Hello world",
+    'person' => request()->get('person'),
+]);
