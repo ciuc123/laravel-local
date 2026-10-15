@@ -24,4 +24,3 @@ Route::get('/', function(){
     ]);
 });
 
-Route::get("/lemon", LemonIoTestController::class)->name('lemon');
