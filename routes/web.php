@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LeetcodeController;
+use App\Http\Controllers\LemonIoTestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,3 +23,5 @@ Route::get('/', function(){
         'person' => request('person', "World"),
     ]);
 });
+
+Route::get("/lemon", LemonIoTestController::class)->name('lemon');
